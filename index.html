@@ -1,508 +1,77 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI 나이 맞추기 게임</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/face-api.js/0.22.2/face-api.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .subtitle {
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.1em;
-        }
-
-        .upload-area {
-            border: 3px dashed #667eea;
-            border-radius: 15px;
-            padding: 40px 20px;
-            margin: 30px 0;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: rgba(102, 126, 234, 0.05);
-            position: relative;
-        }
-
-        .upload-area:hover {
-            border-color: #764ba2;
-            background: rgba(118, 75, 162, 0.1);
-            transform: translateY(-2px);
-        }
-
-        .upload-area.dragover {
-            border-color: #764ba2;
-            background: rgba(118, 75, 162, 0.2);
-            transform: scale(1.02);
-        }
-
-        .upload-icon {
-            font-size: 3em;
-            color: #667eea;
-            margin-bottom: 15px;
-        }
-
-        .upload-text {
-            font-size: 1.2em;
-            color: #555;
-            margin-bottom: 10px;
-        }
-
-        .upload-subtext {
-            font-size: 0.9em;
-            color: #888;
-        }
-
-        #imageInput {
-            display: none;
-        }
-
-        .image-preview {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 10px;
-            margin: 20px 0;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            display: none;
-        }
-
-        .loading {
-            display: none;
-            margin: 20px 0;
-        }
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 15px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .result {
-            display: none;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin: 20px 0;
-        }
-
-        .age-display {
-            font-size: 3em;
-            font-weight: bold;
-            margin: 10px 0;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .age-category {
-            font-size: 1.3em;
-            margin: 10px 0;
-            opacity: 0.9;
-        }
-
-        .confidence {
-            font-size: 1em;
-            opacity: 0.8;
-            margin-top: 10px;
-        }
-
-        .real-age-input {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            padding: 10px 15px;
-            color: white;
-            font-size: 1.1em;
-            margin: 15px 5px;
-            width: 80px;
-            text-align: center;
-        }
-
-        .real-age-input::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .compare-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1em;
-            margin: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .compare-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .comparison {
-            display: none;
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-        }
-
-        .diff-positive {
-            color: #2ecc71;
-            font-weight: bold;
-        }
-
-        .diff-negative {
-            color: #e74c3c;
-            font-weight: bold;
-        }
-
-        .reset-btn {
-            background: linear-gradient(45deg, #2ecc71, #27ae60);
-            border: none;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-size: 1em;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-        }
-
-        .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        .feature {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 10px;
-            font-size: 0.9em;
-        }
-
-        .feature-title {
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .error {
-            display: none;
-            background: #e74c3c;
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            margin: 15px 0;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <title>나이/성별 예측 디버깅 버전</title>
+  <style>
+    canvas, img { max-width: 100%; }
+    #wrapper { display: flex; gap: 20px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🔮 AI 나이 맞추기</h1>
-        <p class="subtitle">사진을 업로드하면 AI가 나이를 맞춰드려요!</p>
+  <h2>📷 얼굴 사진으로 나이/성별 예측 (디버깅 콘솔 포함)</h2>
+  <input type="file" id="imageUpload" accept="image/*" />
+  <div id="wrapper">
+    <img id="inputImage" />
+    <canvas id="overlay"></canvas>
+  </div>
 
-        <div class="upload-area" onclick="document.getElementById('imageInput').click()">
-            <div class="upload-icon">📷</div>
-            <div class="upload-text">사진을 클릭하거나 드래그해서 업로드</div>
-            <div class="upload-subtext">JPG, PNG 파일 지원</div>
-        </div>
+  <!-- 안정적인 CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
 
-        <input type="file" id="imageInput" accept="image/*">
-        <img id="imagePreview" class="image-preview">
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      const faceapi = window.faceapi;
 
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <div>AI가 얼굴을 분석중이에요...</div>
-        </div>
+      const imageUpload = document.getElementById('imageUpload');
+      const inputImage = document.getElementById('inputImage');
+      const overlay = document.getElementById('overlay');
 
-        <div class="error" id="error">
-            <strong>⚠️ 오류 발생</strong><br>
-            얼굴을 찾을 수 없어요. 얼굴이 잘 보이는 사진을 다시 업로드해주세요.
-        </div>
+      const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+      console.log("모델 로딩 시작...");
+      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+      await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
+      console.log("모델 로딩 완료");
 
-        <div class="result" id="result">
-            <div>AI가 예측한 나이</div>
-            <div class="age-display" id="predictedAge">25</div>
-            <div class="age-category" id="ageCategory">젊은 성인</div>
-            <div class="confidence" id="confidence">신뢰도: 85%</div>
+      imageUpload.addEventListener('change', async () => {
+        const file = imageUpload.files[0];
+        if (!file) return;
 
-            <div style="margin: 20px 0;">
-                <label style="margin-right: 10px;">실제 나이:</label>
-                <input type="number" class="real-age-input" id="realAge" placeholder="나이" min="1" max="100">
-                <button class="compare-btn" onclick="compareAge()">비교하기</button>
-            </div>
+        inputImage.src = URL.createObjectURL(file);
+        inputImage.onload = async () => {
+          overlay.width = inputImage.width;
+          overlay.height = inputImage.height;
 
-            <div class="comparison" id="comparison">
-                <div id="comparisonText"></div>
-            </div>
+          console.log("이미지 로드 완료, 얼굴 탐지 시작...");
+          const detections = await faceapi
+            .detectAllFaces(inputImage, new faceapi.TinyFaceDetectorOptions())
+            .withAgeAndGender();
 
-            <div class="features">
-                <div class="feature">
-                    <div class="feature-title">🎯 정확도</div>
-                    <div id="accuracyText">높음</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-title">👤 얼굴형</div>
-                    <div id="faceShapeText">타원형</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-title">😊 표정</div>
-                    <div id="expressionText">중성</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-title">✨ 특징</div>
-                    <div id="featuresText">부드러운 인상</div>
-                </div>
-            </div>
-        </div>
+          console.log("감지된 얼굴 수:", detections.length);
+          console.log("전체 결과:", detections);
 
-        <button class="reset-btn" onclick="resetAll()" id="resetBtn" style="display: none;">다른 사진으로 다시하기</button>
-    </div>
+          const ctx = overlay.getContext('2d');
+          ctx.clearRect(0, 0, overlay.width, overlay.height);
 
-    <script>
-        let currentAge = 0;
-        let modelsLoaded = false;
+          detections.forEach(det => {
+            console.log("나이:", det.age);
+            console.log("성별:", det.gender, "확률:", det.genderProbability);
 
-        // 모델 로딩은 실제로는 복잡하므로 시뮬레이션
-        async function loadModels() {
-            // 실제로는 face-api.js 모델을 로드해야 함
-            return new Promise(resolve => setTimeout(resolve, 1000));
-        }
+            const { age, gender, genderProbability, detection } = det;
+            const roundedAge = Math.round(age);
+            const text = `${roundedAge}세 / ${gender} (${(genderProbability*100).toFixed(1)}%)`;
 
-        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
-
-        // 드래그 앤 드롭 기능
-        const uploadArea = document.querySelector('.upload-area');
-        
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleImageFile(files[0]);
-            }
-        });
-
-        function handleImageUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                handleImageFile(file);
-            }
-        }
-
-        function handleImageFile(file) {
-            if (!file.type.startsWith('image/')) {
-                showError('이미지 파일만 업로드 가능합니다.');
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.getElementById('imagePreview');
-                img.src = e.target.result;
-                img.style.display = 'block';
-                
-                // 분석 시작
-                analyzeAge();
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function analyzeAge() {
-            const loading = document.getElementById('loading');
-            const result = document.getElementById('result');
-            const error = document.getElementById('error');
-            const resetBtn = document.getElementById('resetBtn');
-
-            // UI 상태 초기화
-            loading.style.display = 'block';
-            result.style.display = 'none';
-            error.style.display = 'none';
-            
-            try {
-                // 실제로는 AI 모델로 분석해야 하지만, 여기서는 시뮬레이션
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // 랜덤한 나이 생성 (실제로는 AI 분석 결과)
-                const predictedAge = Math.floor(Math.random() * 50) + 15; // 15-65세
-                const confidence = Math.floor(Math.random() * 30) + 70; // 70-100%
-                
-                currentAge = predictedAge;
-                
-                // 결과 표시
-                displayResult(predictedAge, confidence);
-                
-                loading.style.display = 'none';
-                result.style.display = 'block';
-                resetBtn.style.display = 'block';
-                
-            } catch (err) {
-                loading.style.display = 'none';
-                showError('분석 중 오류가 발생했습니다. 다시 시도해주세요.');
-            }
-        }
-
-        function displayResult(age, confidence) {
-            document.getElementById('predictedAge').textContent = age + '세';
-            document.getElementById('confidence').textContent = `신뢰도: ${confidence}%`;
-            
-            // 나이대별 카테고리
-            let category = '';
-            if (age < 13) category = '어린이';
-            else if (age < 20) category = '청소년';
-            else if (age < 30) category = '젊은 성인';
-            else if (age < 40) category = '성인';
-            else if (age < 50) category = '중년';
-            else if (age < 65) category = '장년';
-            else category = '시니어';
-            
-            document.getElementById('ageCategory').textContent = category;
-            
-            // 랜덤 특징 생성
-            const faceShapes = ['타원형', '둥근형', '각진형', '하트형', '다이아몬드형'];
-            const expressions = ['행복한 표정', '중성적 표정', '진지한 표정', '미소', '차분한 표정'];
-            const features = ['부드러운 인상', '지적인 인상', '친근한 인상', '카리스마', '우아한 분위기'];
-            
-            document.getElementById('faceShapeText').textContent = faceShapes[Math.floor(Math.random() * faceShapes.length)];
-            document.getElementById('expressionText').textContent = expressions[Math.floor(Math.random() * expressions.length)];
-            document.getElementById('featuresText').textContent = features[Math.floor(Math.random() * features.length)];
-            
-            // 정확도 텍스트
-            let accuracyText = '';
-            if (confidence >= 90) accuracyText = '매우 높음';
-            else if (confidence >= 80) accuracyText = '높음';
-            else if (confidence >= 70) accuracyText = '보통';
-            else accuracyText = '낮음';
-            
-            document.getElementById('accuracyText').textContent = accuracyText;
-        }
-
-        function compareAge() {
-            const realAge = parseInt(document.getElementById('realAge').value);
-            const comparison = document.getElementById('comparison');
-            const comparisonText = document.getElementById('comparisonText');
-            
-            if (!realAge || realAge < 1 || realAge > 100) {
-                alert('올바른 나이를 입력해주세요 (1-100세)');
-                return;
-            }
-            
-            const diff = currentAge - realAge;
-            const absDiff = Math.abs(diff);
-            
-            let message = '';
-            let className = '';
-            
-            if (absDiff <= 2) {
-                message = `🎯 대박! 거의 정확해요! (차이: ${absDiff}세)`;
-                className = 'diff-positive';
-            } else if (absDiff <= 5) {
-                message = `👍 꽤 정확해요! (차이: ${absDiff}세)`;
-                className = 'diff-positive';
-            } else if (absDiff <= 10) {
-                message = `😅 조금 차이가 나네요 (차이: ${absDiff}세)`;
-                className = 'diff-negative';
-            } else {
-                message = `😱 많이 차이나네요! (차이: ${absDiff}세)`;
-                className = 'diff-negative';
-            }
-            
-            if (diff > 0) {
-                message += `\nAI가 ${diff}세 더 많게 봤어요`;
-                if (diff > 5) message += ' - 노안이신가요? 😄';
-            } else if (diff < 0) {
-                message += `\nAI가 ${Math.abs(diff)}세 더 적게 봤어요`;
-                if (Math.abs(diff) > 5) message += ' - 동안이시네요! 😊';
-            }
-            
-            comparisonText.innerHTML = message.replace(/\n/g, '<br>');
-            comparisonText.className = className;
-            comparison.style.display = 'block';
-        }
-
-        function resetAll() {
-            document.getElementById('imagePreview').style.display = 'none';
-            document.getElementById('result').style.display = 'none';
-            document.getElementById('comparison').style.display = 'none';
-            document.getElementById('resetBtn').style.display = 'none';
-            document.getElementById('error').style.display = 'none';
-            document.getElementById('realAge').value = '';
-            document.getElementById('imageInput').value = '';
-            currentAge = 0;
-        }
-
-        function showError(message) {
-            const error = document.getElementById('error');
-            error.innerHTML = '<strong>⚠️ 오류 발생</strong><br>' + message;
-            error.style.display = 'block';
-            document.getElementById('resetBtn').style.display = 'block';
-        }
-
-        // 페이지 로드 시 모델 로딩 시작
-        loadModels().then(() => {
-            modelsLoaded = true;
-        });
-    </script>
+            const box = detection.box;
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(box.x, box.y, box.width, box.height);
+            ctx.fillStyle = 'blue';
+            ctx.font = '16px Arial';
+            ctx.fillText(text, box.x, Math.max(box.y - 5, 20));
+          });
+        };
+      });
+    });
+  </script>
 </body>
 </html>
