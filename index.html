@@ -56,7 +56,7 @@
           detections.forEach(det => {
             console.log("나이:", det.age);
             console.log("성별:", det.gender, "확률:", det.genderProbability);
-
+            alert("나이:", det.age + "\n성별:", det.gender+"\n확률:", det.genderProbability);
             const { age, gender, genderProbability, detection } = det;
             const roundedAge = Math.round(age);
             const text = `${roundedAge}세 / ${gender} (${(genderProbability*100).toFixed(1)}%)`;
