@@ -58,3 +58,105 @@
     });
   });
 </script>
+
+
+
+
+
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+
+    .container {
+      position: relative;
+      display: inline-block;
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    area {
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* 모달 팝업 스타일 */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.6);
+    }
+
+    .modal-content {
+      margin: 10% auto;
+      display: block;
+      width: 90%;
+      max-width: 600px;
+      border-radius: 8px;
+    }
+
+    .close {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      color: white;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    area:hover {
+      outline: 2px solid red;
+    }
+  </style>
+
+
+
+
+<div class="container">
+  <!-- 배경 이미지 -->
+  <img src="모바일스펙3.jpg" usemap="#imgmap2025713173534" alt="자전거">
+  
+  <!-- 이미지맵 -->
+  <map name="imgmap2025713173534">
+    <area shape="rect" coords="574,775,632,834" alt="페달" onclick="showModal('페달.jpg'); return false;">
+    <!-- 다른 영역들도 이와 같이 추가 가능 -->
+  </map>
+</div>
+
+<!-- 모달 팝업 구조 -->
+<div id="myModal" class="modal" onclick="closeModal(event)">
+  <span class="close" onclick="closeModal()">&times;</span>
+  <img class="modal-content" id="popupImage" src="" alt="상세 이미지">
+</div>
+
+<script>
+  function showModal(imagePath) {
+    document.getElementById("popupImage").src = imagePath;
+    document.getElementById("myModal").style.display = "block";
+  }
+
+  function closeModal(event) {
+    // 배경 클릭 시만 닫기 (이미지 클릭 시는 제외)
+    if (!event || event.target.id === "myModal") {
+      document.getElementById("myModal").style.display = "none";
+      document.getElementById("popupImage").src = ""; // 이미지 초기화
+    }
+  }
+
+  // ESC 키로 닫기
+  window.addEventListener("keydown", function(event) {
+    if (event.key === "Escape") closeModal();
+  });
+</script>
