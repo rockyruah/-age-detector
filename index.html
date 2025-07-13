@@ -1,6 +1,7 @@
-<meta name="viewport" content="width=device-width, initial-scale=1>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <!-- 360도 회전 뷰어 영역 -->
-<div id="spin360" style="width: 600px; height: 400px; margin: auto;"></div>
+<div id="spin360" style="width: 100%; height: auto; max-width: 860px; margin: auto;"></div>
 
 <!-- jQuery & SpriteSpin 라이브러리 로딩 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -9,34 +10,29 @@
 <script>
   // 36장의 회전 이미지 설정
   const images = [];
-  //for (let i = 1; i <= 36; i++) {
-    //const num = String(i).padStart(3, '0');    
-	images.push(`Frame 110.jpg`);
-	images.push(`Frame 111.jpg`);
-	images.push(`Frame 112.jpg`);
-	images.push(`Frame 113.jpg`);
-	images.push(`Frame 114.jpg`);
-	images.push(`Frame 115.jpg`);
-	
-    images.push(`Frame 116.jpg`);
-	images.push(`Frame 117.jpg`);
-	images.push(`Frame 118.jpg`);
-	images.push(`Frame 119.jpg`);
-	images.push(`Frame 120.jpg`);
-	images.push(`Frame 121.jpg`);	
-	
-  //}
+  images.push('Frame 110.jpg');
+  images.push('Frame 111.jpg');
+  images.push('Frame 112.jpg');
+  images.push('Frame 113.jpg');
+  images.push('Frame 114.jpg');
+  images.push('Frame 115.jpg');
+  images.push('Frame 116.jpg');
+  images.push('Frame 117.jpg');
+  images.push('Frame 118.jpg');
+  images.push('Frame 119.jpg');
+  images.push('Frame 120.jpg');
+  images.push('Frame 121.jpg');
 
   // SpriteSpin 초기화
   $(function() {
     $('#spin360').spritespin({
       source: images,
-      width: 860,
-      height: 800,
-      frames: 36,
+      width: '100%',    // 반응형
+      height: 'auto',   // 반응형 높이
+      frames: images.length, // 이미지 수
       sense: -1,
       animate: false,
-      responsive: false
+      responsive: true, // 반응형 설정
     });
   });
 </script>
