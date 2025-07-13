@@ -1,111 +1,41 @@
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>나이/성별 예측 (모바일 대응)</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 1rem;
-      background-color: #f4f4f4;
-      color: #333;
-    }
-    h2 {
-      text-align: center;
-      font-size: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    input[type="file"] {
-      display: block;
-      margin: 0 auto 1rem auto;
-      padding: 0.5rem;
-      font-size: 1rem;
-    }
-    #wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 1rem;
-    }
-    img, canvas {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
-    }
-    @media (min-width: 600px) {
-      #wrapper {
-        flex-direction: row;
-        justify-content: center;
-      }
-      img, canvas {
-        max-width: 45%;
-      }
-    }
-  </style>
-</head>
-<body>
-  <h2>📷 얼굴 사진으로 나이/성별 예측</h2>
-  <input type="file" id="imageUpload" accept="image/*" />
-  <div id="wrapper">
-    <img id="inputImage" />
-    <canvas id="overlay"></canvas>
-  </div>
+<!-- 360도 회전 뷰어 영역 -->
+<div id="spin360" style="width: 600px; height: 400px; margin: auto;"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
-  <script>
-    window.addEventListener('DOMContentLoaded', async () => {
-      const faceapi = window.faceapi;
-      const imageUpload = document.getElementById('imageUpload');
-      const inputImage = document.getElementById('inputImage');
-      const overlay = document.getElementById('overlay');
+<!-- jQuery & SpriteSpin 라이브러리 로딩 -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/spritespin@4.0.11/release/spritespin.min.js"></script>
 
-      const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
-      console.log("모델 로딩 시작...");
-      await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-      await faceapi.nets.ageGenderNet.loadFromUri(MODEL_URL);
-      console.log("모델 로딩 완료");
+<script>
+  // 36장의 회전 이미지 설정
+  const images = [];
+  //for (let i = 1; i <= 36; i++) {
+    //const num = String(i).padStart(3, '0');    
+	images.push(`Frame 110.jpg`);
+	images.push(`Frame 111.jpg`);
+	images.push(`Frame 112.jpg`);
+	images.push(`Frame 113.jpg`);
+	images.push(`Frame 114.jpg`);
+	images.push(`Frame 115.jpg`);
+	
+    images.push(`Frame 116.jpg`);
+	images.push(`Frame 117.jpg`);
+	images.push(`Frame 118.jpg`);
+	images.push(`Frame 119.jpg`);
+	images.push(`Frame 120.jpg`);
+	images.push(`Frame 121.jpg`);	
+	
+  //}
 
-      imageUpload.addEventListener('change', async () => {
-        const file = imageUpload.files[0];
-        if (!file) return;
-
-        inputImage.src = URL.createObjectURL(file);
-        inputImage.onload = async () => {
-          overlay.width = inputImage.width;
-          overlay.height = inputImage.height;
-
-          console.log("이미지 로드 완료, 얼굴 탐지 시작...");
-          const detections = await faceapi
-            .detectAllFaces(inputImage, new faceapi.TinyFaceDetectorOptions())
-            .withAgeAndGender();
-
-          console.log("감지된 얼굴 수:", detections.length);
-          const ctx = overlay.getContext('2d');
-          ctx.clearRect(0, 0, overlay.width, overlay.height);
-
-          detections.forEach(det => {
-            console.log("나이:", det.age);
-            console.log("성별:", det.gender, "확률:", det.genderProbability);
-            alert("나이: " + det.age.toFixed(1) + "\n성별: " + det.gender + "\n확률: " + (det.genderProbability * 100).toFixed(1) + "%");
-
-            const { age, gender, genderProbability, detection } = det;
-            const roundedAge = Math.round(age);
-            const text = `${roundedAge}세 / ${gender} (${(genderProbability*100).toFixed(1)}%)`;
-
-            const box = detection.box;
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(box.x, box.y, box.width, box.height);
-            ctx.fillStyle = 'blue';
-            ctx.font = '16px Arial';
-            ctx.fillText(text, box.x, Math.max(box.y - 5, 20));
-          });
-        };
-      });
+  // SpriteSpin 초기화
+  $(function() {
+    $('#spin360').spritespin({
+      source: imageList,
+      width: 600,
+      height: 400,
+      frames: 36,
+      sense: -1,
+      animate: false,
+      responsive: true
     });
-  </script>
-</body>
-</html>
+  });
+</script>
